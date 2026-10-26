@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>คำนวณราคา Elu & Ori</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --label-color: #555555;
+            --input-bg: #ffffff;
+            --input-text: #000000;
+            --input-border: #ccc;
+            --section-bg: #fafbfc;
+            --section-border: #e1e4e8;
+            --elu-title: #2980b9;
+            --elu-border: #d4e6f1;
+            --ori-title: #8e44ad;
+            --ori-border: #ebdef0;
+            --result-bg: #e8f4f8;
+            --result-text: #2c3e50;
+            --grand-total: #c0392b;
+            --announcement-bg: #eef2f7;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --label-color: #b0b0b0;
+            --input-bg: #2d2d2d;
+            --input-text: #ffffff;
+            --input-border: #444;
+            --section-bg: #252525;
+            --section-border: #333;
+            --elu-title: #5499c7;
+            --elu-border: #1b4f72;
+            --ori-title: #bb8fce;
+            --ori-border: #512e5f;
+            --result-bg: #1f3a4d;
+            --result-text: #ecf0f1;
+            --grand-total: #e74c3c;
+            --announcement-bg: #2a2a2a;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            width: 420px; 
+            transition: background 0.3s;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        h2 { 
+            color: var(--text-color); 
+            font-size: 17px; 
+            margin: 0; 
+        }
+
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+        .theme-btn:hover {
+            opacity: 0.8;
+        }
+        
+        .section { 
+            background: var(--section-bg); 
+            border: 1px solid var(--section-border); 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-bottom: 12px; 
+        }
+        .section-title { font-weight: bold; font-size: 14px; margin-bottom: 8px; border-bottom: 2px solid; padding-bottom: 4px; }
+        .elu-title { color: var(--elu-title); border-color: var(--elu-border); }
+        .ori-title { color: var(--ori-title); border-color: var(--ori-border); }
+
+        .form-group { margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        label { font-size: 13px; color: var(--label-color); width: 60%; }
+        input { 
+            width: 38%; 
+            padding: 6px; 
+            box-sizing: border-box; 
+            border: 1px solid var(--input-border); 
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border-radius: 6px; 
+            text-align: right; 
+            font-size: 13px; 
+        }
+        
+        .sub-total { font-size: 13px; font-weight: bold; text-align: right; margin-top: 6px; color: var(--text-color); }
+
+        .result-box { margin-top: 15px; background: var(--result-bg); padding: 12px; border-radius: 8px; }
+        .result-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; color: var(--result-text); }
+        .grand-total { font-weight: bold; color: var(--grand-total); border-top: 1px dashed var(--input-border); padding-top: 6px; margin-top: 6px; font-size: 15px; }
+
+        .announcement-box {
+            margin-top: 15px;
+            background: var(--announcement-bg);
+            border: 1px solid var(--section-border);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .announcement-title {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: var(--text-color);
+        }
+        .announcement-output {
+            font-size: 13px;
+            background: var(--input-bg);
+            color: var(--input-text);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--input-border);
+            word-break: break-all;
+            margin-bottom: 8px;
+            min-height: 20px;
+        }
+        .copy-btn {
+            width: 100%;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #219653;
+        }
+        .copy-success {
+            background-color: #2980b9 !important;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div class="card">
+    <div class="header-container">
+        <h2>คำนวณราคา Elu / Ori</h2>
+        <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">☀️ Light Mode</button>
+    </div>
+    
+    <!-- โซน Elu -->
+    <div class="section">
+        <div class="section-title elu-title">🛡️ Elunium (Elu)</div>
+        <div class="form-group">
+            <label>ราคาต่อก้อนเล็ก (zeny):</label>
+            <input type="text" id="eluPrice" oninput="formatInputNumber(this); calculate();" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label>จำนวนก้อนเล็ก (ก้อน):</label>
+            <input type="text" id="eluQtySmall" oninput="formatInputNumber(this); calculate();" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label>จำนวนก้อนใหญ่ (ก้อน):</label>
+            <input type="text" id="eluQtyBig" oninput="formatInputNumber(this); calculate();" placeholder="0">
+        </div>
+        <div class="sub-total">รวม Elu: <span id="eluTotal">0.00</span> zeny</div>
+    </div>
+
+    <!-- โซน Ori -->
+    <div class="section">
+        <div class="section-title ori-title">⚔️ Oridecon (Ori)</div>
+        <div class="form-group">
+            <label>ราคาต่อก้อนเล็ก (zeny):</label>
+            <input type="text" id="oriPrice" oninput="formatInputNumber(this); calculate();" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label>จำนวนก้อนเล็ก (ก้อน):</label>
+            <input type="text" id="oriQtySmall" oninput="formatInputNumber(this); calculate();" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label>จำนวนก้อนใหญ่ (ก้อน):</label>
+            <input type="text" id="oriQtyBig" oninput="formatInputNumber(this); calculate();" placeholder="0">
+        </div>
+        <div class="sub-total">รวม Ori: <span id="oriTotal">0.00</span> zeny</div>
+    </div>
+
+    <!-- ผลลัพธ์รวมทั้งหมด -->
+    <div class="result-box">
+        <div class="result-row"><span>ราคารวม Elu:</span> <span id="resElu">0.00</span></div>
+        <div class="result-row"><span>ราคารวม Ori:</span> <span id="resOri">0.00</span></div>
+        <div class="result-row grand-total"><span>ราคารวมทั้งสิ้น:</span> <span id="grandTotal">0.00</span></div>
+    </div>
+
+    <!-- โซน Wording ประกาศราคา -->
+    <div class="announcement-box">
+        <div class="announcement-title">📢 ข้อความประกาศในเกม:</div>
+        <div id="announcementText" class="announcement-output">[อยู่]ร.Elu0 Ori0 เคาะเดล</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyAnnouncement()">📋 Copy ข้อความไปใช้</button>
+    </div>
+</div>
+
+<script>
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('themeBtn');
+    if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        btn.innerText = '🌙 Dark Mode';
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        btn.innerText = '☀️ Light Mode';
+    }
+}
+
+function formatInputNumber(input) {
+    let value = input.value.replace(/,/g, '');
+    if (!isNaN(value) && value !== "") {
+        let parts = value.split('.');
+        parts[0] = Number(parts[0]).toLocaleString();
+        input.value = parts.join('.');
+    }
+}
+
+function getCleanValue(id) {
+    let val = document.getElementById(id).value.replace(/,/g, '');
+    return parseFloat(val) || 0;
+}
+
+// ฟังก์ชันแปลงราคาสำหรับแสดงในข้อความประกาศ (หาร 1,000 เพื่อให้ 4,800 กลายเป็น 4.8)
+function formatPriceXX(price) {
+    if (!price || price <= 0) return "0";
+    let val = price / 1000;
+    return val; // คงค่าทศนิยมตามจริง (เช่น 4.8 หรือ 2.1)
+}
+
+function calculate() {
+    let eluP = getCleanValue('eluPrice');
+    let eluQS = getCleanValue('eluQtySmall');
+    let eluQB = getCleanValue('eluQtyBig');
+    let totalEluQty = eluQS + (eluQB * 5); 
+    let eluT = eluP * totalEluQty;
+
+    let oriP = getCleanValue('oriPrice');
+    let oriQS = getCleanValue('oriQtySmall');
+    let oriQB = getCleanValue('oriQtyBig');
+    let totalOriQty = oriQS + (oriQB * 5); 
+    let oriT = oriP * totalOriQty;
+
+    let grandT = eluT + oriT;
+
+    // แสดงผลตัวเลขในตาราง
+    document.getElementById('eluTotal').innerText = eluT.toLocaleString();
+    document.getElementById('oriTotal').innerText = oriT.toLocaleString();
+    
+    document.getElementById('resElu').innerText = eluT.toLocaleString() + " zeny";
+    document.getElementById('resOri').innerText = oriT.toLocaleString() + " zeny";
+    document.getElementById('grandTotal').innerText = grandT.toLocaleString() + " zeny";
+
+    // สร้างข้อความประกาศรูปแบบ [อยู่]ร.Eluxx Orixx เคาะเดล
+    let eluText = formatPriceXX(eluP);
+    let oriText = formatPriceXX(oriP);
+
+    let announceStr = `[อยู่]ร.Elu${eluText} Ori${oriText} เคาะเดล`;
+    document.getElementById('announcementText').innerText = announceStr;
+}
+
+function copyAnnouncement() {
+    let textToCopy = document.getElementById('announcementText').innerText;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        let btn = document.getElementById('copyBtn');
+        btn.innerText = "✅ คัดลอกสำเร็จ!";
+        btn.classList.add("copy-success");
+        setTimeout(() => {
+            btn.innerText = "📋 Copy ข้อความไปใช้";
+            btn.classList.remove("copy-success");
+        }, 1500);
+    });
+}
+</script>
+
+</body>
+</html>
