@@ -77,7 +77,7 @@
             display: flex;
             gap: 20px;
             width: 100%;
-            max-width: 1200px;
+            max-width: 950px;
             justify-content: center;
             align-items: flex-start;
         }
@@ -85,78 +85,17 @@
         .container {
             width: 100%;
             max-width: 550px;
-            flex: 1;
+            flex: 1.2;
         }
 
+        /* คอลัมน์ฝั่งขวาสำหรับเครื่องคิดเลขและประวัติการคิด */
         .calculator-container {
             width: 100%;
-            max-width: 500px;
+            max-width: 360px;
             flex: 1;
             display: flex;
+            flex-direction: column;
             gap: 15px;
-        }
-
-        .calc-main-panel {
-            flex: 1.5;
-        }
-
-        /* กรอบแสดงประวัติการคำนวณด้านข้าง */
-        .calc-history-panel {
-            flex: 1;
-            background: var(--section-bg);
-            border: 1px solid var(--section-border);
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            max-height: 380px;
-        }
-
-        .history-title {
-            font-size: 13px;
-            font-weight: bold;
-            color: var(--calc-title);
-            margin-bottom: 8px;
-            border-bottom: 1px solid var(--section-border);
-            padding-bottom: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .clear-history-btn {
-            background: none;
-            border: none;
-            color: #e74c3c;
-            font-size: 11px;
-            cursor: pointer;
-            padding: 0;
-        }
-        .clear-history-btn:hover {
-            text-decoration: underline;
-        }
-
-        .history-list {
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 12px;
-            font-family: monospace;
-            max-height: 310px;
-        }
-
-        .history-item {
-            background: var(--input-bg);
-            padding: 6px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--input-border);
-            color: var(--text-color);
-            word-break: break-all;
-        }
-        .history-item span {
-            color: var(--bright-gold);
-            font-weight: bold;
         }
 
         .card { 
@@ -332,6 +271,63 @@
             background: #219653;
         }
 
+        /* กรอบแสดงประวัติการคำนวณด้านล่างเครื่องคิดเลข */
+        .calc-history-panel {
+            background: var(--section-bg);
+            border: 1px solid var(--section-border);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--calc-title);
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--section-border);
+            padding-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-history-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 0;
+        }
+        .clear-history-btn:hover {
+            text-decoration: underline;
+        }
+
+        .history-list {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            font-family: monospace;
+            max-height: 180px;
+        }
+
+        .history-item {
+            background: var(--input-bg);
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            word-break: break-all;
+        }
+        .history-item span {
+            color: var(--bright-gold);
+            font-weight: bold;
+        }
+
         .theme-toggle-floating {
             position: fixed;
             bottom: 20px;
@@ -355,14 +351,13 @@
             transform: translateY(-3px) scale(1.05);
         }
 
-        @media (max-width: 1000px) {
+        @media (max-width: 850px) {
             .main-layout {
                 flex-direction: column;
                 align-items: center;
             }
             .calculator-container {
                 max-width: 550px;
-                flex-direction: column;
             }
         }
     </style>
@@ -431,15 +426,14 @@
         </div>
     </div>
 
-    <!-- ฝั่งขวา: เครื่องคิดเลข + แผงประวัติ -->
+    <!-- ฝั่งขวา: เครื่องคิดเลข และ ประวัติการคิดด้านล่าง -->
     <div class="calculator-container">
-        <!-- ตัวเครื่องคิดเลข -->
-        <div class="card calc-main-panel">
+        <div class="card">
             <div class="header-container">
                 <h2 style="color: var(--calc-title);">🧮 เครื่องคิดเลข</h2>
             </div>
             
-            <div class="section" style="margin-bottom: 0;">
+            <div class="section" style="margin-bottom: 12px;">
                 <div class="section-title calc-title">Quick Calculator</div>
                 <div id="calcScreen" class="calc-screen">0</div>
                 
@@ -467,16 +461,16 @@
                     <button class="calc-btn" onclick="calcAppend('.')">.</button>
                 </div>
             </div>
-        </div>
 
-        <!-- แผงประวัติการคำนวณด้านข้าง -->
-        <div class="calc-history-panel card">
-            <div class="history-title">
-                <span>📜 ประวัติการคิด</span>
-                <button class="clear-history-btn" onclick="clearHistory()">ล้างประวัติ</button>
-            </div>
-            <div class="history-list" id="historyList">
-                <div style="color: var(--label-color); text-align: center; margin-top: 20px;">ยังไม่มีประวัติการคำนวณ</div>
+            <!-- กล่องประวัติการคิดย้ายมาอยู่ตรงนี้ (ด้านล่างเครื่องคิดเลข) -->
+            <div class="calc-history-panel">
+                <div class="history-title">
+                    <span>📜 ประวัติการคิด</span>
+                    <button class="clear-history-btn" onclick="clearHistory()">ล้างประวัติ</button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <div style="color: var(--label-color); text-align: center; margin-top: 10px; margin-bottom: 10px;">ยังไม่มีประวัติการคำนวณ</div>
+                </div>
             </div>
         </div>
     </div>
@@ -629,7 +623,7 @@ function calcResult() {
 function renderHistory() {
     let listElem = document.getElementById('historyList');
     if (calcHistory.length === 0) {
-        listElem.innerHTML = `<div style="color: var(--label-color); text-align: center; margin-top: 20px;">ยังไม่มีประวัติการคำนวณ</div>`;
+        listElem.innerHTML = `<div style="color: var(--label-color); text-align: center; margin-top: 10px; margin-bottom: 10px;">ยังไม่มีประวัติการคำนวณ</div>`;
         return;
     }
     listElem.innerHTML = calcHistory.map(item => `<div class="history-item">${item}</div>`).join('');
@@ -642,7 +636,6 @@ function clearHistory() {
 
 // ⌨️ รองรับการกดแป้นพิมพ์และ Numpad ทันที
 document.addEventListener('keydown', function(event) {
-    // ทำงานเฉพาะตอนที่ไม่ได้โฟกัสอยู่ในช่องกรอกข้อความอื่น เพื่อไม่ให้พิมพ์ตัวเลขไปปะปน
     if (document.activeElement.tagName === 'INPUT') return;
 
     let key = event.key;
