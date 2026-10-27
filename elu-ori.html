@@ -46,8 +46,6 @@
             --elu-border: #d4e6f1;
             --ori-title: #8e44ad;
             --ori-border: #ebdef0;
-            --calc-title: #d35400;
-            --calc-border: #edbb99;
             --result-bg: #e8f4f8;
             --result-text: #2c3e50;
             --grand-total: #d35400;
@@ -88,7 +86,6 @@
             flex: 1.2;
         }
 
-        /* คอลัมน์ฝั่งขวาสำหรับเครื่องคิดเลขและประวัติการคิด */
         .calculator-container {
             width: 100%;
             max-width: 360px;
@@ -130,9 +127,17 @@
         .calc-title { color: var(--calc-title); border-color: var(--calc-border); }
 
         .form-group { margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        label { font-size: 13px; color: var(--label-color); width: 60%; }
+        label { font-size: 13px; color: var(--label-color); width: 50%; }
+        
+        .input-with-btns {
+            width: 48%;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
         input { 
-            width: 38%; 
+            width: 100%; 
             padding: 6px; 
             box-sizing: border-box; 
             border: 1px solid var(--input-border); 
@@ -141,6 +146,30 @@
             border-radius: 6px; 
             text-align: right; 
             font-size: 13px; 
+        }
+
+        /* ปุ่มลัดขนาดเล็กสำหรับช่องจำนวน */
+        .qty-action-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            font-size: 11px;
+            font-weight: bold;
+            padding: 6px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+        .qty-action-btn:hover {
+            background: var(--section-border);
+            filter: brightness(1.2);
+        }
+        .qty-action-btn.clear-btn {
+            color: #e74c3c;
+        }
+        .qty-action-btn.plus-btn {
+            color: #27ae60;
         }
 
         .sub-total { font-size: 13px; font-weight: bold; text-align: right; margin-top: 6px; color: var(--text-color); }
@@ -216,19 +245,41 @@
 
         .calc-screen {
             width: 100%;
-            height: 45px;
             background: var(--input-bg);
             border: 1px solid var(--input-border);
-            color: var(--bright-gold);
-            font-size: 20px;
-            font-weight: bold;
-            text-align: right;
-            padding: 8px 12px;
-            box-sizing: border-box;
             border-radius: 6px;
+            padding: 10px 12px;
+            box-sizing: border-box;
             margin-bottom: 12px;
-            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            min-height: 65px;
             overflow: hidden;
+        }
+
+        .calc-history-view {
+            font-size: 12px;
+            color: var(--label-color);
+            font-family: monospace;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+            min-height: 16px;
+            word-break: break-all;
+            text-align: right;
+            width: 100%;
+        }
+
+        .calc-main-view {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--bright-gold);
+            font-family: monospace;
+            letter-spacing: 1.5px;
+            word-break: break-all;
+            text-align: right;
+            width: 100%;
         }
 
         .calc-buttons {
@@ -271,7 +322,6 @@
             background: #219653;
         }
 
-        /* กรอบแสดงประวัติการคำนวณด้านล่างเครื่องคิดเลข */
         .calc-history-panel {
             background: var(--section-bg);
             border: 1px solid var(--section-border);
@@ -322,6 +372,7 @@
             border: 1px solid var(--input-border);
             color: var(--text-color);
             word-break: break-all;
+            letter-spacing: 0.5px;
         }
         .history-item span {
             color: var(--bright-gold);
@@ -376,15 +427,25 @@
                 <div class="section-title elu-title">🛡️ Elunium (Elu)</div>
                 <div class="form-group">
                     <label>ราคาต่อก้อนเล็ก (zeny):</label>
-                    <input type="text" id="eluPrice" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                    <div class="input-with-btns">
+                        <input type="text" id="eluPrice" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>จำนวนก้อนเล็ก (ก้อน):</label>
-                    <input type="text" id="eluQtySmall" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                    <div class="input-with-btns">
+                        <input type="text" id="eluQtySmall" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                        <button class="qty-action-btn clear-btn" onclick="clearQty('eluQtySmall')" title="เคลียร์ตัวเลข">C</button>
+                        <button class="qty-action-btn plus-btn" onclick="addQty('eluQtySmall', 1)" title="เพิ่มทีละ 1">+1</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>จำนวนก้อนใหญ่ (ก้อน):</label>
-                    <input type="text" id="eluQtyBig" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                    <div class="input-with-btns">
+                        <input type="text" id="eluQtyBig" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                        <button class="qty-action-btn clear-btn" onclick="clearQty('eluQtyBig')" title="เคลียร์ตัวเลข">C</button>
+                        <button class="qty-action-btn plus-btn" onclick="addQty('eluQtyBig', 1)" title="เพิ่มทีละ 1">+1</button>
+                    </div>
                 </div>
                 <div class="sub-total">รวม Elu: <span id="eluTotal">0</span> zeny</div>
             </div>
@@ -393,15 +454,25 @@
                 <div class="section-title ori-title">⚔️ Oridecon (Ori)</div>
                 <div class="form-group">
                     <label>ราคาต่อก้อนเล็ก (zeny):</label>
-                    <input type="text" id="oriPrice" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                    <div class="input-with-btns">
+                        <input type="text" id="oriPrice" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>จำนวนก้อนเล็ก (ก้อน):</label>
-                    <input type="text" id="oriQtySmall" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                    <div class="input-with-btns">
+                        <input type="text" id="oriQtySmall" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                        <button class="qty-action-btn clear-btn" onclick="clearQty('oriQtySmall')" title="เคลียร์ตัวเลข">C</button>
+                        <button class="qty-action-btn plus-btn" onclick="addQty('oriQtySmall', 1)" title="เพิ่มทีละ 1">+1</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>จำนวนก้อนใหญ่ (ก้อน):</label>
-                    <input type="text" id="oriQtyBig" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                    <div class="input-with-btns">
+                        <input type="text" id="oriQtyBig" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+                        <button class="qty-action-btn clear-btn" onclick="clearQty('oriQtyBig')" title="เคลียร์ตัวเลข">C</button>
+                        <button class="qty-action-btn plus-btn" onclick="addQty('oriQtyBig', 1)" title="เพิ่มทีละ 1">+1</button>
+                    </div>
                 </div>
                 <div class="sub-total">รวม Ori: <span id="oriTotal">0</span> zeny</div>
             </div>
@@ -426,7 +497,7 @@
         </div>
     </div>
 
-    <!-- ฝั่งขวา: เครื่องคิดเลข และ ประวัติการคิดด้านล่าง -->
+    <!-- ฝั่งขวา: เครื่องคิดเลข (สไตล์ Windows Calculator) -->
     <div class="calculator-container">
         <div class="card">
             <div class="header-container">
@@ -435,7 +506,10 @@
             
             <div class="section" style="margin-bottom: 12px;">
                 <div class="section-title calc-title">Quick Calculator</div>
-                <div id="calcScreen" class="calc-screen">0</div>
+                <div class="calc-screen">
+                    <div id="calcHistoryView" class="calc-history-view"></div>
+                    <div id="calcMainView" class="calc-main-view">0</div>
+                </div>
                 
                 <div class="calc-buttons">
                     <button class="calc-btn clear" onclick="calcClear()">C</button>
@@ -462,7 +536,7 @@
                 </div>
             </div>
 
-            <!-- กล่องประวัติการคิดย้ายมาอยู่ตรงนี้ (ด้านล่างเครื่องคิดเลข) -->
+            <!-- กล่องประวัติการคิด -->
             <div class="calc-history-panel">
                 <div class="history-title">
                     <span>📜 ประวัติการคิด</span>
@@ -507,6 +581,21 @@ function formatInputNumber(input) {
 function getCleanValue(id) {
     let val = document.getElementById(id).value.replace(/,/g, '');
     return parseFloat(val) || 0;
+}
+
+// ฟังก์ชันสำหรับปุ่มลัด C (เคลียร์ช่องจำนวน)
+function clearQty(id) {
+    document.getElementById(id).value = "";
+    calculateEluOri();
+}
+
+// ฟังก์ชันสำหรับปุ่มลัด +1 (เพิ่มจำนวนทีละ 1)
+function addQty(id, amount) {
+    let input = document.getElementById(id);
+    let currentVal = getCleanValue(id);
+    let newVal = currentVal + amount;
+    input.value = newVal.toLocaleString();
+    calculateEluOri();
 }
 
 function formatPriceXX(price) {
@@ -579,24 +668,70 @@ function copyAnnouncement() {
     });
 }
 
-// 🧮 ฟังก์ชันเครื่องคิดเลข + ประวัติและการรองรับ Numpad คีย์บอร์ด
+// 🧮 ฟังก์ชันเครื่องคิดเลข
 let calcExpression = "0";
+let calcHistoryViewText = "";
 let calcHistory = [];
+let isJustCalculated = false;
+
+function formatNumberWithCommas(str) {
+    if (!str || str === "Error") return str;
+    let parts = str.split('.');
+    let integerPart = parts[0].replace(/,/g, '');
+    if (!isNaN(integerPart) && integerPart !== "") {
+        integerPart = Number(integerPart).toLocaleString();
+    }
+    return parts.length > 1 ? integerPart + '.' + parts[1] : integerPart;
+}
+
+function formatExpressionDisplay(expr) {
+    if (expr === "Error") return "Error";
+    return expr.replace(/\d+(\.\d+)?/g, function(match) {
+        return formatNumberWithCommas(match);
+    }).replace(/\*/g, ' × ').replace(/\//g, ' ÷ ').replace(/\+/g, ' + ').replace(/-/g, ' - ');
+}
 
 function updateCalcScreen() {
-    document.getElementById('calcScreen').innerText = calcExpression;
+    let tokens = calcExpression.split(/[\+\-\*\/]/);
+    let currentNumber = tokens[tokens.length - 1];
+    
+    document.getElementById('calcMainView').innerText = formatNumberWithCommas(currentNumber);
+    document.getElementById('calcHistoryView').innerText = formatExpressionDisplay(calcHistoryViewText);
 }
 
 function calcClear() {
     calcExpression = "0";
+    calcHistoryViewText = "";
+    isJustCalculated = false;
     updateCalcScreen();
 }
 
 function calcAppend(val) {
+    if (isJustCalculated) {
+        if (!isNaN(val) || val === '.') {
+            calcExpression = val;
+            calcHistoryViewText = val;
+        } else {
+            calcHistoryViewText = calcExpression + val;
+            calcExpression += val;
+        }
+        isJustCalculated = false;
+        updateCalcScreen();
+        return;
+    }
+
     if (calcExpression === "0" && !isNaN(val)) {
         calcExpression = val;
+        calcHistoryViewText = val;
     } else {
-        calcExpression += val;
+        let lastChar = calcExpression.slice(-1);
+        if (isNaN(lastChar) && isNaN(val)) {
+            calcExpression = calcExpression.slice(0, -1) + val;
+            calcHistoryViewText = calcHistoryViewText.trim().slice(0, -1) + val;
+        } else {
+            calcExpression += val;
+            calcHistoryViewText += val;
+        }
     }
     updateCalcScreen();
 }
@@ -606,15 +741,19 @@ function calcResult() {
         let sanitized = calcExpression.replace(/×/g, '*').replace(/÷/g, '/');
         let result = eval(sanitized);
         
-        // บันทึกประวัติ
-        let historyText = `${calcExpression} = <span>${Number(result).toLocaleString()}</span>`;
+        let formattedExpr = formatExpressionDisplay(calcExpression);
+        let historyText = `${formattedExpr} = <span>${Number(result).toLocaleString()}</span>`;
         calcHistory.unshift(historyText);
         renderHistory();
 
+        calcHistoryViewText = `${calcExpression} =`;
         calcExpression = String(result);
+        isJustCalculated = true;
         updateCalcScreen();
     } catch (error) {
         calcExpression = "Error";
+        calcHistoryViewText = "";
+        isJustCalculated = true;
         updateCalcScreen();
         setTimeout(calcClear, 1200);
     }
@@ -634,7 +773,7 @@ function clearHistory() {
     renderHistory();
 }
 
-// ⌨️ รองรับการกดแป้นพิมพ์และ Numpad ทันที
+// ⌨️ รองรับ Numpad และแป้นพิมพ์
 document.addEventListener('keydown', function(event) {
     if (document.activeElement.tagName === 'INPUT') return;
 
@@ -653,9 +792,12 @@ document.addEventListener('keydown', function(event) {
     } else if (key === 'Backspace') {
         if (calcExpression.length > 1) {
             calcExpression = calcExpression.slice(0, -1);
+            calcHistoryViewText = calcHistoryViewText.trim().slice(0, -1);
         } else {
             calcExpression = "0";
+            calcHistoryViewText = "";
         }
+        isJustCalculated = false;
         updateCalcScreen();
     } else if (key === 'Escape') {
         calcClear();
