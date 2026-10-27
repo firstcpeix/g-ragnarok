@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elu / Ori Calculator - RO Tools</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --label-color: #b0b0b0;
+            --input-bg: #2d2d2d;
+            --input-text: #ffffff;
+            --input-border: #444;
+            --section-bg: #252525;
+            --section-border: #333;
+            --elu-title: #5499c7;
+            --elu-border: #1b4f72;
+            --ori-title: #bb8fce;
+            --ori-border: #512e5f;
+            --result-bg: #1f3a4d;
+            --result-text: #ecf0f1;
+            --grand-total: #f1c40f;
+            --announcement-bg: #2a2a2a;
+            --accent-gold: #f39c12;
+            --bright-gold: #f1c40f;
+            --floating-btn-bg: #2c3e50;
+            --floating-btn-text: #f1c40f;
+            --floating-btn-border: #455a64;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --label-color: #555555;
+            --input-bg: #ffffff;
+            --input-text: #000000;
+            --input-border: #ccc;
+            --section-bg: #fafbfc;
+            --section-border: #e1e4e8;
+            --elu-title: #2980b9;
+            --elu-border: #d4e6f1;
+            --ori-title: #8e44ad;
+            --ori-border: #ebdef0;
+            --result-bg: #e8f4f8;
+            --result-text: #2c3e50;
+            --grand-total: #d35400;
+            --announcement-bg: #eef2f7;
+            --accent-gold: #d35400;
+            --bright-gold: #d35400;
+            --floating-btn-bg: #ffffff;
+            --floating-btn-text: #2c3e50;
+            --floating-btn-border: #ddd;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px 10px;
+            box-sizing: border-box;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            border: 1px solid var(--section-border);
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h2 { 
+            color: var(--text-color); 
+            font-size: 18px; 
+            margin: 0; 
+        }
+
+        .section { 
+            background: var(--section-bg); 
+            border: 1px solid var(--section-border); 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-bottom: 12px; 
+        }
+        .section-title { font-weight: bold; font-size: 14px; margin-bottom: 8px; border-bottom: 2px solid; padding-bottom: 4px; }
+        .elu-title { color: var(--elu-title); border-color: var(--elu-border); }
+        .ori-title { color: var(--ori-title); border-color: var(--ori-border); }
+
+        .form-group { margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        label { font-size: 13px; color: var(--label-color); width: 60%; }
+        input { 
+            width: 38%; 
+            padding: 6px; 
+            box-sizing: border-box; 
+            border: 1px solid var(--input-border); 
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border-radius: 6px; 
+            text-align: right; 
+            font-size: 13px; 
+        }
+
+        .sub-total { font-size: 13px; font-weight: bold; text-align: right; margin-top: 6px; color: var(--text-color); }
+        .result-box { margin-top: 15px; background: var(--result-bg); padding: 12px; border-radius: 8px; }
+        .result-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px; color: var(--result-text); }
+        .grand-total { font-weight: bold; color: var(--grand-total); border-top: 1px dashed var(--input-border); padding-top: 6px; margin-top: 6px; font-size: 15px; text-shadow: 0 0 2px rgba(0,0,0,0.5); }
+
+        .announcement-box {
+            margin-top: 15px;
+            background: var(--announcement-bg);
+            border: 1px solid var(--section-border);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .announcement-title { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: var(--text-color); }
+        
+        .template-buttons {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tpl-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            width: auto;
+            display: inline-block;
+            transition: 0.2s;
+            font-family: monospace;
+        }
+        .tpl-btn:hover {
+            background: var(--accent-gold);
+            color: white;
+            border-color: var(--accent-gold);
+        }
+
+        .announcement-input {
+            width: 100%;
+            font-size: 13px;
+            background: var(--input-bg);
+            color: var(--input-text);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--input-border);
+            box-sizing: border-box;
+            margin-bottom: 8px;
+            text-align: left !important;
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            width: 100%;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .copy-success { background-color: #2980b9 !important; }
+
+        .theme-toggle-floating {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--floating-btn-bg);
+            color: var(--floating-btn-text);
+            border: 2px solid var(--floating-btn-border);
+            border-radius: 50px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 999;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .theme-toggle-floating:hover {
+            transform: translateY(-3px) scale(1.05);
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div class="container">
+    <div class="card">
+        <div class="header-container">
+            <h2>🛡️ คำนวณราคา Elu / Ori</h2>
+        </div>
+
+        <div class="section">
+            <div class="section-title elu-title">🛡️ Elunium (Elu)</div>
+            <div class="form-group">
+                <label>ราคาต่อก้อนเล็ก (zeny):</label>
+                <input type="text" id="eluPrice" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>จำนวนก้อนเล็ก (ก้อน):</label>
+                <input type="text" id="eluQtySmall" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>จำนวนก้อนใหญ่ (ก้อน):</label>
+                <input type="text" id="eluQtyBig" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+            </div>
+            <div class="sub-total">รวม Elu: <span id="eluTotal">0</span> zeny</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title ori-title">⚔️ Oridecon (Ori)</div>
+            <div class="form-group">
+                <label>ราคาต่อก้อนเล็ก (zeny):</label>
+                <input type="text" id="oriPrice" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>จำนวนก้อนเล็ก (ก้อน):</label>
+                <input type="text" id="oriQtySmall" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>จำนวนก้อนใหญ่ (ก้อน):</label>
+                <input type="text" id="oriQtyBig" oninput="formatInputNumber(this); calculateEluOri();" placeholder="0">
+            </div>
+            <div class="sub-total">รวม Ori: <span id="oriTotal">0</span> zeny</div>
+        </div>
+
+        <div class="result-box">
+            <div class="result-row"><span>ราคารวม Elu:</span> <span id="resElu">0 zeny</span></div>
+            <div class="result-row"><span>ราคารวม Ori:</span> <span id="resOri">0 zeny</span></div>
+            <div class="result-row grand-total"><span>ราคารวมทั้งสิ้น:</span> <span id="grandTotal" class="bright-gold-text">0 zeny</span></div>
+        </div>
+
+        <div class="announcement-box">
+            <div class="announcement-title">📢 เลือกรูปแบบ Wording ประกาศราคา:</div>
+            <div class="template-buttons">
+                <button class="tpl-btn" onclick="setTemplate('รับ Elu{elu} Ori{ori} เคาะเดล')">รับ Elu{elu} Ori{ori} เคาะเดล</button>
+                <button class="tpl-btn" onclick="setTemplate('[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล')">[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล</button>
+                <button class="tpl-btn" onclick="setTemplate('[On]ร.Elu{elu} Ori{ori} เคาะเดล')">[On]ร.Elu{elu} Ori{ori} เคาะเดล</button>
+            </div>
+            <input type="text" id="announcementText" class="announcement-input" value="[อยู่]ร.Elu0 Ori0 เคาะเดล">
+            <button class="copy-btn" id="copyBtn" onclick="copyAnnouncement()">📋 Copy ข้อความไปใช้ในเกม</button>
+        </div>
+    </div>
+</div>
+
+<button class="theme-toggle-floating" onclick="toggleTheme()" id="themeBtn">
+    ☀️ Light Mode
+</button>
+
+<script>
+let currentEluText = "0";
+let currentOriText = "0";
+let activeTemplate = "[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล";
+
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('themeBtn');
+    if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        btn.innerHTML = '🌙 Dark Mode';
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        btn.innerHTML = '☀️ Light Mode';
+    }
+}
+
+function formatInputNumber(input) {
+    let value = input.value.replace(/,/g, '');
+    if (!isNaN(value) && value !== "") {
+        let parts = value.split('.');
+        parts[0] = Number(parts[0]).toLocaleString();
+        input.value = parts.join('.');
+    }
+}
+
+function getCleanValue(id) {
+    let val = document.getElementById(id).value.replace(/,/g, '');
+    return parseFloat(val) || 0;
+}
+
+function formatPriceXX(price) {
+    if (!price || price <= 0) return "0";
+    return price / 1000;
+}
+
+function setTemplate(templateStr) {
+    activeTemplate = templateStr;
+    updateAnnouncementText();
+}
+
+function updateAnnouncementText() {
+    let eluPStr = document.getElementById('eluPrice').value.trim();
+    let oriPStr = document.getElementById('oriPrice').value.trim();
+    let eluP = getCleanValue('eluPrice');
+    let oriP = getCleanValue('oriPrice');
+
+    let newEluText = eluPStr !== "" ? formatPriceXX(eluP) : "0";
+    let newOriText = oriPStr !== "" ? formatPriceXX(oriP) : "0";
+
+    let resultText = activeTemplate
+        .replace('{elu}', newEluText)
+        .replace('{ori}', newOriText);
+
+    document.getElementById('announcementText').value = resultText;
+}
+
+function calculateEluOri() {
+    let eluP = getCleanValue('eluPrice');
+    let eluQS = getCleanValue('eluQtySmall');
+    let eluQB = getCleanValue('eluQtyBig');
+    let totalEluQty = eluQS + (eluQB * 5); 
+    let eluT = Math.round(eluP * totalEluQty);
+
+    let oriP = getCleanValue('oriPrice');
+    let oriQS = getCleanValue('oriQtySmall');
+    let oriQB = getCleanValue('oriQtyBig');
+    let totalOriQty = oriQS + (oriQB * 5); 
+    let oriT = Math.round(oriP * totalOriQty);
+
+    let grandT = eluT + oriT;
+
+    document.getElementById('eluTotal').innerText = eluT.toLocaleString();
+    document.getElementById('oriTotal').innerText = oriT.toLocaleString();
+    
+    document.getElementById('resElu').innerText = eluT.toLocaleString() + " zeny";
+    document.getElementById('resOri').innerText = oriT.toLocaleString() + " zeny";
+    document.getElementById('grandTotal').innerText = grandT.toLocaleString() + " zeny";
+
+    updateAnnouncementText();
+}
+
+// ฟังก์ชันแก้ไขปัญหาภาษาไทยเป็นเครื่องหมาย ???? ในเกม RO โดยการเข้ารหัสข้อความเฉพาะกิจ
+slugMap = {'อ':'อ','ย':'ย','ู่':'ู่','ร':'ร','เ':'เ','ค':'ค','ะ':'ะ','ด':'ด','ล':'ล','O':'O','n':'n','l':'l','u':'u','i':'i'};
+function copyAnnouncement() {
+    let rawText = document.getElementById('announcementText').value;
+    
+    // ใช้เทคนิคเลือกข้อความใน Input และสั่ง copy ผ่าน Clipboard API พร้อมบังคับ UTF-8 Plain Text
+    navigator.clipboard.writeText(rawText).then(() => {
+        let btn = document.getElementById('copyBtn');
+        btn.innerText = "✅ คัดลอกสำเร็จ! (พร้อมวางในเกม)";
+        btn.classList.add("copy-success");
+        setTimeout(() => {
+            btn.innerText = "📋 Copy ข้อความไปใช้ในเกม";
+            btn.classList.remove("copy-success");
+        }, 1500);
+    }).catch(err => {
+        // Fallback กรณี Clipboard API ถูกบล็อก
+        let inputElem = document.getElementById('announcementText');
+        inputElem.select();
+        document.execCommand('copy');
+        alert("คัดลอกข้อความแล้ว!");
+    });
+}
+</script>
+
+</body>
+</html>
