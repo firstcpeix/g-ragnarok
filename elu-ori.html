@@ -355,26 +355,47 @@ function calculateEluOri() {
     updateAnnouncementText();
 }
 
-// ฟังก์ชันแก้ไขปัญหาภาษาไทยเป็นเครื่องหมาย ???? ในเกม RO โดยการเข้ารหัสข้อความเฉพาะกิจ
-slugMap = {'อ':'อ','ย':'ย','ู่':'ู่','ร':'ร','เ':'เ','ค':'ค','ะ':'ะ','ด':'ด','ล':'ล','O':'O','n':'n','l':'l','u':'u','i':'i'};
+// ฟังก์ชันแปลงข้อความรองรับ Windows-874 สำหรับเกม RO
 function copyAnnouncement() {
     let rawText = document.getElementById('announcementText').value;
     
-    // ใช้เทคนิคเลือกข้อความใน Input และสั่ง copy ผ่าน Clipboard API พร้อมบังคับ UTF-8 Plain Text
-    navigator.clipboard.writeText(rawText).then(() => {
+    // แปลงสตริงให้ส่งผ่านระบบคัดลอกแบบบังคับไบต์ภาษาไทยของ Windows-874
+    let buffer = new ArrayBuffer(rawText.length);
+    let view = new Uint8Array(buffer);
+    
+    // ตารางแปลงรหัสตัวอักษรไทยพื้นฐานสำหรับไคลเอนต์ RO
+    for (let i = 0; i < rawText.length; i++) {
+        let code = rawText.charCodeAt(i);
+        if (code >= 0x0E01 && code <= 0x0E5B) {
+            view[i] = code - 0x0E00 + 0xA0; // แปลงย่านรหัสภาษาไทย Thai to TIS-620/Windows-874
+        } else {
+            view[i] = code & 0xFF;
+        }
+    }
+    
+    // ใช้ Blob บังคับเข้ารหัส charset=windows-874 เพื่อให้ตัวเกม RO อ่านออกถูกต้อง
+    let blob = new Blob([view], { type: "text/plain;charset=windows-874" });
+    let data = [new ClipboardItem({ "text/plain": blob })];
+
+    navigator.clipboard.write(data).then(() => {
         let btn = document.getElementById('copyBtn');
-        btn.innerText = "✅ คัดลอกสำเร็จ! (พร้อมวางในเกม)";
+        btn.innerText = "✅ คัดลอกสำเร็จ! (วางในเกมไม่เป็น ???? แล้ว)";
         btn.classList.add("copy-success");
         setTimeout(() => {
             btn.innerText = "📋 Copy ข้อความไปใช้ในเกม";
             btn.classList.remove("copy-success");
-        }, 1500);
+        }, 2000);
     }).catch(err => {
-        // Fallback กรณี Clipboard API ถูกบล็อก
-        let inputElem = document.getElementById('announcementText');
-        inputElem.select();
-        document.execCommand('copy');
-        alert("คัดลอกข้อความแล้ว!");
+        // Fallback วิธีสำรอง
+        navigator.clipboard.writeText(rawText).then(() => {
+            let btn = document.getElementById('copyBtn');
+            btn.innerText = "✅ คัดลอกสำเร็จ!";
+            btn.classList.add("copy-success");
+            setTimeout(() => {
+                btn.innerText = "📋 Copy ข้อความไปใช้ในเกม";
+                btn.classList.remove("copy-success");
+            }, 1500);
+        });
     });
 }
 </script>
