@@ -118,7 +118,6 @@
             color: var(--label-color);
         }
 
-        /* ปุ่มเปลี่ยนธีมแบบลอย มุมขวาล่าง */
         .theme-toggle-floating {
             position: fixed;
             bottom: 20px;
@@ -148,32 +147,29 @@
 
 <div class="container">
     <div class="header-title">⚔️ G-Ragnarok Hub</div>
-    <div class="header-subtitle">ศูนย์รวมเครื่องมือคำนวณและตัวช่วยสำหรับเกม Ragnarok Online</div>
+    <div class="header-subtitle">ศูนย์รวมเครื่องมือและตัวช่วยสำหรับเกม Ragnarok Online</div>
 
     <div class="menu-list">
-        <!-- ลิงก์ไปหน้าเครื่องมือคำนวณที่เราทำไว้ -->
-        <a href="ro-calculators.html" class="menu-card">
-            <div class="menu-icon">🧮</div>
+        <!-- เมนูคำนวณ Elu / Ori (เปิดแท็บใหม่) -->
+        <a href="elu-ori.html" target="_blank" class="menu-card">
+            <div class="menu-icon">🛡️</div>
             <div class="menu-info">
-                <div class="menu-title">RO Calculators</div>
-                <div class="menu-desc">คำนวณราคา Elu/Ori, ข้อความประกาศขาย และแปลงเรทเงิน M (บาท ↔ Zeny)</div>
+                <div class="menu-title">Elu / Ori Calculator</div>
+                <div class="menu-desc">คำนวณราคาแร่ Elunium, Oridecon พร้อมระบบเวิดดิ่งประกาศขายในเกม</div>
             </div>
         </a>
 
-        <!-- เผื่อไว้สำหรับอนาคต (ตัวอย่างเมนูเครื่องมือตัวต่อไป) -->
-        <!-- 
-        <a href="ro-item-tracker.html" class="menu-card">
-            <div class="menu-icon">🛡️</div>
+        <!-- เมนูแปลงเงิน Zeny (เปิดแท็บใหม่) -->
+        <a href="zeny-converter.html" target="_blank" class="menu-card">
+            <div class="menu-icon">💰</div>
             <div class="menu-info">
-                <div class="menu-title">RO Item Tracker (Coming Soon)</div>
-                <div class="menu-desc">ระบบติดตามราคาสิ่งของและไอเทมในตลาด</div>
+                <div class="menu-title">Zeny & THB Converter</div>
+                <div class="menu-desc">ระบบแปลงเรทเงินสด บาท ↔ Zeny แยกซีก 10 ช่องคำนวณด่วน</div>
             </div>
-        </a> 
-        -->
+        </a>
     </div>
 </div>
 
-<!-- ปุ่มเปลี่ยนธีมลอย -->
 <button class="theme-toggle-floating" onclick="toggleTheme()" id="themeBtn">
     ☀️ Light Mode
 </button>
