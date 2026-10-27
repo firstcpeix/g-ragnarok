@@ -157,7 +157,6 @@
             border-color: var(--accent-gold);
         }
 
-        /* เปลี่ยนจาก Textbox มาเป็น Text ธรรมดาหน้าตาเหมือนกล่องข้อความ */
         .announcement-display {
             width: 100%;
             font-size: 14px;
@@ -175,7 +174,7 @@
             word-break: break-all;
         }
 
-        .copy-btn {
+        .download-btn {
             width: 100%;
             background-color: #27ae60;
             color: white;
@@ -187,10 +186,9 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .copy-btn:hover {
+        .download-btn:hover {
             background-color: #219653;
         }
-        .copy-success { background-color: #2980b9 !important; }
 
         .theme-toggle-floating {
             position: fixed;
@@ -265,17 +263,17 @@
         </div>
 
         <div class="announcement-box">
-            <div class="announcement-title">📢 เลือกรูปแบบ Wording ประกาศราคา:</div>
+            <div class="announcement-title">📢 รูปแบบ Wording ประกาศราคา (รองรับภาษาไทย):</div>
             <div class="template-buttons">
                 <button class="tpl-btn" onclick="setTemplate('รับ Elu{elu} Ori{ori} เคาะเดล')">รับ Elu{elu} Ori{ori} เคาะเดล</button>
                 <button class="tpl-btn" onclick="setTemplate('[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล')">[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล</button>
                 <button class="tpl-btn" onclick="setTemplate('[On]ร.Elu{elu} Ori{ori} เคาะเดล')">[On]ร.Elu{elu} Ori{ori} เคาะเดล</button>
             </div>
             
-            <!-- เปลี่ยนเป็น Plain Text (Div) ธรรมดา ตัดปัญหา Textbox และ HTML Encoding เพี้ยน -->
             <div id="announcementText" class="announcement-display">[อยู่]ร.Elu0 Ori0 เคาะเดล</div>
             
-            <button class="copy-btn" id="copyBtn" onclick="copyAnnouncementText()">📋 Click เพื่อ Copy ข้อความไปวางในเกม</button>
+            <!-- ปุ่มดาวน์โหลดไฟล์ข้อความไปเปิดแล้วก๊อปปี้แบบผ่าน Notepad -->
+            <button class="download-btn" onclick="downloadTextFile()">📥 ดาวน์โหลดไฟล์ข้อความ (ภาษาไทยไม่เพี้ยน 100%)</button>
         </div>
     </div>
 </div>
@@ -365,19 +363,15 @@ function calculateEluOri() {
     updateAnnouncementText();
 }
 
-// ใช้ระบบดึง Text ล้วนแบบ Plain Text ดึงตรงจากตัวแปร JavaScript บังคับรอด 100%
-function copyAnnouncementText() {
-    navigator.clipboard.writeText(currentTextToCopy).then(() => {
-        let btn = document.getElementById('copyBtn');
-        btn.innerText = "✅ คัดลอกสำเร็จ! (พร้อมวางในเกม)";
-        btn.classList.add("copy-success");
-        setTimeout(() => {
-            btn.innerText = "📋 Click เพื่อ Copy ข้อความไปวางในเกม";
-            btn.classList.remove("copy-success");
-        }, 1500);
-    }).catch(err => {
-        alert("ไม่สามารถคัดลอกอัตโนมัติได้");
-    });
+// ฟังก์ชันสร้างไฟล์ Text ดิบๆ ให้ดาวน์โหลด (เทียบเท่าการบันทึกผ่าน Notepad ทันที)
+function downloadTextFile() {
+    let blob = new Blob([currentTextToCopy], { type: "text/plain;charset=utf-8" });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "ro-text.txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 </script>
 
