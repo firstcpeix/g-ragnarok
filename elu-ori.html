@@ -157,6 +157,7 @@
             border-color: var(--accent-gold);
         }
 
+        /* กล่องข้อความแบบคลิกปุ๊บคลุมดำอัตโนมัติ */
         .announcement-display {
             width: 100%;
             font-size: 14px;
@@ -172,22 +173,16 @@
             font-family: monospace;
             min-height: 20px;
             word-break: break-all;
+            cursor: pointer;
+            user-select: all; /* ทำให้คลิกปุ๊บเลือกข้อความทั้งหมดทันที */
         }
 
-        .download-btn {
-            width: 100%;
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .download-btn:hover {
-            background-color: #219653;
+        .hint-text {
+            font-size: 11px;
+            color: var(--label-color);
+            text-align: center;
+            margin-top: -5px;
+            margin-bottom: 5px;
         }
 
         .theme-toggle-floating {
@@ -263,17 +258,16 @@
         </div>
 
         <div class="announcement-box">
-            <div class="announcement-title">📢 รูปแบบ Wording ประกาศราคา (รองรับภาษาไทย):</div>
+            <div class="announcement-title">📢 รูปแบบ Wording ประกาศราคา:</div>
             <div class="template-buttons">
                 <button class="tpl-btn" onclick="setTemplate('รับ Elu{elu} Ori{ori} เคาะเดล')">รับ Elu{elu} Ori{ori} เคาะเดล</button>
                 <button class="tpl-btn" onclick="setTemplate('[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล')">[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล</button>
                 <button class="tpl-btn" onclick="setTemplate('[On]ร.Elu{elu} Ori{ori} เคาะเดล')">[On]ร.Elu{elu} Ori{ori} เคาะเดล</button>
             </div>
             
-            <div id="announcementText" class="announcement-display">[อยู่]ร.Elu0 Ori0 เคาะเดล</div>
-            
-            <!-- ปุ่มดาวน์โหลดไฟล์ข้อความไปเปิดแล้วก๊อปปี้แบบผ่าน Notepad -->
-            <button class="download-btn" onclick="downloadTextFile()">📥 ดาวน์โหลดไฟล์ข้อความ (ภาษาไทยไม่เพี้ยน 100%)</button>
+            <!-- กล่องข้อความคลิกปุ๊บคลุมดำอัตโนมัติ -->
+            <div id="announcementText" class="announcement-display" onclick="selectText(this)">[อยู่]ร.Elu0 Ori0 เคาะเดล</div>
+            <div class="hint-text">💡 คลิกที่ข้อความเพื่อคลุมดำอัตโนมัติ จากนั้นกด Ctrl+C แล้วนำไปวางในเกมได้เลย</div>
         </div>
     </div>
 </div>
@@ -284,7 +278,6 @@
 
 <script>
 let activeTemplate = "[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล";
-let currentTextToCopy = "[อยู่]ร.Elu0 Ori0 เคาะเดล";
 
 function toggleTheme() {
     const body = document.body;
@@ -331,11 +324,11 @@ function updateAnnouncementText() {
     let newEluText = eluPStr !== "" ? formatPriceXX(eluP) : "0";
     let newOriText = oriPStr !== "" ? formatPriceXX(oriP) : "0";
 
-    currentTextToCopy = activeTemplate
+    let resultText = activeTemplate
         .replace('{elu}', newEluText)
         .replace('{ori}', newOriText);
 
-    document.getElementById('announcementText').innerText = currentTextToCopy;
+    document.getElementById('announcementText').innerText = resultText;
 }
 
 function calculateEluOri() {
@@ -363,15 +356,13 @@ function calculateEluOri() {
     updateAnnouncementText();
 }
 
-// ฟังก์ชันสร้างไฟล์ Text ดิบๆ ให้ดาวน์โหลด (เทียบเท่าการบันทึกผ่าน Notepad ทันที)
-function downloadTextFile() {
-    let blob = new Blob([currentTextToCopy], { type: "text/plain;charset=utf-8" });
-    let link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "ro-text.txt";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+// ฟังก์ชันช่วยเลือกข้อความทั้งหมดในกล่องเมื่อคลิก
+function selectText(element) {
+    let range = document.createRange();
+    range.selectNodeContents(element);
+    let selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
 }
 </script>
 
