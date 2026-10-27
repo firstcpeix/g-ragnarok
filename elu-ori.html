@@ -157,8 +157,8 @@
             border-color: var(--accent-gold);
         }
 
-        /* กล่องข้อความดิบ คลิกปุ๊บก๊อปปี้อัตโนมัติทันที */
-        .announcement-display {
+        /* ช่องกรอกข้อความประกาศ ที่สามารถพิมพ์แก้ไขเองได้อิสระ */
+        .announcement-input {
             width: 100%;
             font-size: 14px;
             background: var(--input-bg);
@@ -167,30 +167,28 @@
             border-radius: 6px;
             border: 1px solid var(--input-border);
             box-sizing: border-box;
-            margin-bottom: 8px;
-            text-align: left;
+            margin-bottom: 10px;
+            text-align: left !important;
             font-weight: bold;
             font-family: monospace;
-            min-height: 20px;
-            word-break: break-all;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .announcement-display:hover {
-            border-color: var(--accent-gold);
-            filter: brightness(1.1);
-        }
-        .copied-flash {
-            background-color: #27ae60 !important;
-            color: #ffffff !important;
         }
 
-        .hint-text {
-            font-size: 11px;
-            color: var(--label-color);
-            text-align: center;
-            margin: 0;
+        .copy-btn {
+            width: 100%;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
         }
+        .copy-btn:hover {
+            background-color: #219653;
+        }
+        .copy-success { background-color: #2980b9 !important; }
 
         .theme-toggle-floating {
             position: fixed;
@@ -265,16 +263,17 @@
         </div>
 
         <div class="announcement-box">
-            <div class="announcement-title">📢 รูปแบบ Wording ประกาศราคา:</div>
+            <div class="announcement-title">📢 รูปแบบ Wording ประกาศราคา (พิมพ์แก้เองได้อิสระ):</div>
             <div class="template-buttons">
                 <button class="tpl-btn" onclick="setTemplate('รับ Elu{elu} Ori{ori} เคาะเดล')">รับ Elu{elu} Ori{ori} เคาะเดล</button>
                 <button class="tpl-btn" onclick="setTemplate('[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล')">[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล</button>
                 <button class="tpl-btn" onclick="setTemplate('[On]ร.Elu{elu} Ori{ori} เคาะเดล')">[On]ร.Elu{elu} Ori{ori} เคาะเดล</button>
             </div>
             
-            <!-- กล่องข้อความดิบ: คลิกปุ๊บ Copy ลง Clipboard อัตโนมัติทันที -->
-            <div id="announcementText" class="announcement-display" onclick="copyDirectly(this)">[อยู่]ร.Elu0 Ori0 เคาะเดล</div>
-            <div class="hint-text" id="hintText">💡 คลิกที่กล่องข้อความเพื่อ Copy อัตโนมัติ แล้วไปกด Ctrl+V ในเกมได้เลย</div>
+            <!-- ช่องกรอกข้อความประกาศ (พิมพ์แก้ได้ตามใจชอบ แล้วกดปุ่ม Copy) -->
+            <input type="text" id="announcementInput" class="announcement-input" value="[อยู่]ร.Elu0 Ori0 เคาะเดล">
+            
+            <button class="copy-btn" id="copyBtn" onclick="copyAnnouncement()">📋 Copy ข้อความไปวางในเกม</button>
         </div>
     </div>
 </div>
@@ -285,7 +284,6 @@
 
 <script>
 let activeTemplate = "[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล";
-let currentTextToCopy = "[อยู่]ร.Elu0 Ori0 เคาะเดล";
 
 function toggleTheme() {
     const body = document.body;
@@ -332,11 +330,11 @@ function updateAnnouncementText() {
     let newEluText = eluPStr !== "" ? formatPriceXX(eluP) : "0";
     let newOriText = oriPStr !== "" ? formatPriceXX(oriP) : "0";
 
-    currentTextToCopy = activeTemplate
+    let resultText = activeTemplate
         .replace('{elu}', newEluText)
         .replace('{ori}', newOriText);
 
-    document.getElementById('announcementText').innerText = currentTextToCopy;
+    document.getElementById('announcementInput').value = resultText;
 }
 
 function calculateEluOri() {
@@ -364,22 +362,24 @@ function calculateEluOri() {
     updateAnnouncementText();
 }
 
-// ฟังก์ชันสั่ง Copy ข้อความดิบลง Clipboard ทันทีที่คลิก
-function copyDirectly(element) {
-    navigator.clipboard.writeText(currentTextToCopy).then(() => {
-        element.classList.add("copied-flash");
-        let hint = document.getElementById('hintText');
-        let originalHintText = hint.innerText;
-        hint.innerText = "✅ คัดลอกสำเร็จ! สลับไปเกมแล้วกด Ctrl+V ได้เลย";
-        hint.style.color = "#27ae60";
+// ฟังก์ชันคัดลอกข้อความที่คุณพิมพ์แก้ไขในช่องกรอกได้ทันที
+function copyAnnouncement() {
+    let inputElem = document.getElementById('announcementInput');
+    inputElem.select();
+    inputElem.setSelectionRange(0, 99999); // สำหรับมือถือ
 
+    navigator.clipboard.writeText(inputElem.value).then(() => {
+        let btn = document.getElementById('copyBtn');
+        btn.innerText = "✅ คัดลอกสำเร็จ! นำไปวางในเกมได้เลย";
+        btn.classList.add("copy-success");
         setTimeout(() => {
-            element.classList.remove("copied-flash");
-            hint.innerText = originalHintText;
-            hint.style.color = "var(--label-color)";
+            btn.innerText = "📋 Copy ข้อความไปวางในเกม";
+            btn.classList.remove("copy-success");
         }, 1500);
     }).catch(err => {
-        alert("เบราว์เซอร์ไม่อนุญาตให้คัดลอกอัตโนมัติ");
+        // Fallback กรณี Clipboard ถูกบล็อก
+        document.execCommand('copy');
+        alert("คัดลอกข้อความแล้ว!");
     });
 }
 </script>
