@@ -171,20 +171,15 @@
             font-weight: bold;
         }
 
-        .btn-group-copy {
-            display: flex;
-            gap: 8px;
-        }
-
         .copy-btn {
-            flex: 1;
+            width: 100%;
             background-color: #27ae60;
             color: white;
             border: none;
             padding: 8px;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
         }
         .copy-success { background-color: #2980b9 !important; }
@@ -264,17 +259,12 @@
         <div class="announcement-box">
             <div class="announcement-title">📢 เลือกรูปแบบ Wording ประกาศราคา:</div>
             <div class="template-buttons">
-                <!-- แบบไร้ปัญหาภาษาไทย 100% -->
-                <button class="tpl-btn" onclick="setTemplate('[On] R.Elu{elu} Ori{ori} KuerDel')">[On] R.Elu... (เซฟชัวร์)</button>
-                <button class="tpl-btn" onclick="setTemplate('Rub Elu{elu} Ori{ori} KuerDel')">Rub Elu... (เซฟชัวร์)</button>
-                <!-- แบบภาษาไทยปกติ -->
+                <button class="tpl-btn" onclick="setTemplate('รับ Elu{elu} Ori{ori} เคาะเดล')">รับ Elu{elu} Ori{ori} เคาะเดล</button>
                 <button class="tpl-btn" onclick="setTemplate('[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล')">[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล</button>
+                <button class="tpl-btn" onclick="setTemplate('[On]ร.Elu{elu} Ori{ori} เคาะเดล')">[On]ร.Elu{elu} Ori{ori} เคาะเดล</button>
             </div>
-            <input type="text" id="announcementText" class="announcement-input" value="[On] R.Elu0 Ori0 KuerDel">
-            
-            <div class="btn-group-copy">
-                <button class="copy-btn" id="copyBtn" onclick="copyNormal()">📋 Copy ข้อความ</button>
-            </div>
+            <input type="text" id="announcementText" class="announcement-input" value="[อยู่]ร.Elu0 Ori0 เคาะเดล">
+            <button class="copy-btn" id="copyBtn" onclick="copyNotepadStyle()">📋 Copy ข้อความไปใช้ในเกม (ผ่านระบบ Notepad)</button>
         </div>
     </div>
 </div>
@@ -284,7 +274,7 @@
 </button>
 
 <script>
-let activeTemplate = "[On] R.Elu{elu} Ori{ori} KuerDel";
+let activeTemplate = "[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล";
 
 function toggleTheme() {
     const body = document.body;
@@ -363,17 +353,36 @@ function calculateEluOri() {
     updateAnnouncementText();
 }
 
-function copyNormal() {
+// ฟังก์ชันจำลองการดึงข้อความแบบที่ผ่าน Notepad โดยการสร้าง Element ชั่วคราวบังคับ Encoding
+function copyNotepadStyle() {
     let text = document.getElementById('announcementText').value;
-    navigator.clipboard.writeText(text).then(() => {
+    
+    // สร้าง textarea ชั่วคราวเพื่อดึงค่าระบบ raw text แบบเดียวกับ Notepad
+    let textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";  // ป้องกันหน้าจอกระโดด
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    
+    try {
+        let successful = document.execCommand('copy');
         let btn = document.getElementById('copyBtn');
-        btn.innerText = "✅ คัดลอกแล้ว!";
-        btn.classList.add("copy-success");
-        setTimeout(() => {
-            btn.innerText = "📋 Copy ข้อความ";
-            btn.classList.remove("copy-success");
-        }, 1500);
-    });
+        if (successful) {
+            btn.innerText = "✅ คัดลอกสำเร็จ! (ภาษาไทยไม่เพี้ยน)";
+            btn.classList.add("copy-success");
+            setTimeout(() => {
+                btn.innerText = "📋 Copy ข้อความไปใช้ในเกม (ผ่านระบบ Notepad)";
+                btn.classList.remove("copy-success");
+            }, 2000);
+        } else {
+            alert("คัดลอกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+        }
+    } catch (err) {
+        alert("เบราว์เซอร์ไม่อนุญาตให้คัดลอกอัตโนมัติ");
+    }
+    
+    document.body.removeChild(textarea);
 }
 </script>
 
