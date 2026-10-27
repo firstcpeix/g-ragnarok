@@ -157,18 +157,22 @@
             border-color: var(--accent-gold);
         }
 
-        .announcement-input {
+        /* เปลี่ยนจาก Textbox มาเป็น Text ธรรมดาหน้าตาเหมือนกล่องข้อความ */
+        .announcement-display {
             width: 100%;
-            font-size: 13px;
+            font-size: 14px;
             background: var(--input-bg);
-            color: var(--input-text);
-            padding: 8px;
+            color: var(--bright-gold);
+            padding: 10px;
             border-radius: 6px;
             border: 1px solid var(--input-border);
             box-sizing: border-box;
-            margin-bottom: 8px;
-            text-align: left !important;
+            margin-bottom: 10px;
+            text-align: left;
             font-weight: bold;
+            font-family: monospace;
+            min-height: 20px;
+            word-break: break-all;
         }
 
         .copy-btn {
@@ -176,11 +180,15 @@
             background-color: #27ae60;
             color: white;
             border: none;
-            padding: 8px;
+            padding: 10px;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
+            transition: 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #219653;
         }
         .copy-success { background-color: #2980b9 !important; }
 
@@ -263,8 +271,11 @@
                 <button class="tpl-btn" onclick="setTemplate('[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล')">[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล</button>
                 <button class="tpl-btn" onclick="setTemplate('[On]ร.Elu{elu} Ori{ori} เคาะเดล')">[On]ร.Elu{elu} Ori{ori} เคาะเดล</button>
             </div>
-            <input type="text" id="announcementText" class="announcement-input" value="[อยู่]ร.Elu0 Ori0 เคาะเดล">
-            <button class="copy-btn" id="copyBtn" onclick="copyNotepadStyle()">📋 Copy ข้อความไปใช้ในเกม (ผ่านระบบ Notepad)</button>
+            
+            <!-- เปลี่ยนเป็น Plain Text (Div) ธรรมดา ตัดปัญหา Textbox และ HTML Encoding เพี้ยน -->
+            <div id="announcementText" class="announcement-display">[อยู่]ร.Elu0 Ori0 เคาะเดล</div>
+            
+            <button class="copy-btn" id="copyBtn" onclick="copyAnnouncementText()">📋 Click เพื่อ Copy ข้อความไปวางในเกม</button>
         </div>
     </div>
 </div>
@@ -275,6 +286,7 @@
 
 <script>
 let activeTemplate = "[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล";
+let currentTextToCopy = "[อยู่]ร.Elu0 Ori0 เคาะเดล";
 
 function toggleTheme() {
     const body = document.body;
@@ -321,11 +333,11 @@ function updateAnnouncementText() {
     let newEluText = eluPStr !== "" ? formatPriceXX(eluP) : "0";
     let newOriText = oriPStr !== "" ? formatPriceXX(oriP) : "0";
 
-    let resultText = activeTemplate
+    currentTextToCopy = activeTemplate
         .replace('{elu}', newEluText)
         .replace('{ori}', newOriText);
 
-    document.getElementById('announcementText').value = resultText;
+    document.getElementById('announcementText').innerText = currentTextToCopy;
 }
 
 function calculateEluOri() {
@@ -353,36 +365,19 @@ function calculateEluOri() {
     updateAnnouncementText();
 }
 
-// ฟังก์ชันจำลองการดึงข้อความแบบที่ผ่าน Notepad โดยการสร้าง Element ชั่วคราวบังคับ Encoding
-function copyNotepadStyle() {
-    let text = document.getElementById('announcementText').value;
-    
-    // สร้าง textarea ชั่วคราวเพื่อดึงค่าระบบ raw text แบบเดียวกับ Notepad
-    let textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.style.position = "fixed";  // ป้องกันหน้าจอกระโดด
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-    
-    try {
-        let successful = document.execCommand('copy');
+// ใช้ระบบดึง Text ล้วนแบบ Plain Text ดึงตรงจากตัวแปร JavaScript บังคับรอด 100%
+function copyAnnouncementText() {
+    navigator.clipboard.writeText(currentTextToCopy).then(() => {
         let btn = document.getElementById('copyBtn');
-        if (successful) {
-            btn.innerText = "✅ คัดลอกสำเร็จ! (ภาษาไทยไม่เพี้ยน)";
-            btn.classList.add("copy-success");
-            setTimeout(() => {
-                btn.innerText = "📋 Copy ข้อความไปใช้ในเกม (ผ่านระบบ Notepad)";
-                btn.classList.remove("copy-success");
-            }, 2000);
-        } else {
-            alert("คัดลอกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
-        }
-    } catch (err) {
-        alert("เบราว์เซอร์ไม่อนุญาตให้คัดลอกอัตโนมัติ");
-    }
-    
-    document.body.removeChild(textarea);
+        btn.innerText = "✅ คัดลอกสำเร็จ! (พร้อมวางในเกม)";
+        btn.classList.add("copy-success");
+        setTimeout(() => {
+            btn.innerText = "📋 Click เพื่อ Copy ข้อความไปวางในเกม";
+            btn.classList.remove("copy-success");
+        }, 1500);
+    }).catch(err => {
+        alert("ไม่สามารถคัดลอกอัตโนมัติได้");
+    });
 }
 </script>
 
