@@ -157,7 +157,7 @@
             border-color: var(--accent-gold);
         }
 
-        /* กล่องข้อความแบบคลิกปุ๊บคลุมดำอัตโนมัติ */
+        /* กล่องข้อความดิบ คลิกปุ๊บก๊อปปี้อัตโนมัติทันที */
         .announcement-display {
             width: 100%;
             font-size: 14px;
@@ -167,22 +167,29 @@
             border-radius: 6px;
             border: 1px solid var(--input-border);
             box-sizing: border-box;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-align: left;
             font-weight: bold;
             font-family: monospace;
             min-height: 20px;
             word-break: break-all;
             cursor: pointer;
-            user-select: all; /* ทำให้คลิกปุ๊บเลือกข้อความทั้งหมดทันที */
+            transition: background 0.2s;
+        }
+        .announcement-display:hover {
+            border-color: var(--accent-gold);
+            filter: brightness(1.1);
+        }
+        .copied-flash {
+            background-color: #27ae60 !important;
+            color: #ffffff !important;
         }
 
         .hint-text {
             font-size: 11px;
             color: var(--label-color);
             text-align: center;
-            margin-top: -5px;
-            margin-bottom: 5px;
+            margin: 0;
         }
 
         .theme-toggle-floating {
@@ -265,9 +272,9 @@
                 <button class="tpl-btn" onclick="setTemplate('[On]ร.Elu{elu} Ori{ori} เคาะเดล')">[On]ร.Elu{elu} Ori{ori} เคาะเดล</button>
             </div>
             
-            <!-- กล่องข้อความคลิกปุ๊บคลุมดำอัตโนมัติ -->
-            <div id="announcementText" class="announcement-display" onclick="selectText(this)">[อยู่]ร.Elu0 Ori0 เคาะเดล</div>
-            <div class="hint-text">💡 คลิกที่ข้อความเพื่อคลุมดำอัตโนมัติ จากนั้นกด Ctrl+C แล้วนำไปวางในเกมได้เลย</div>
+            <!-- กล่องข้อความดิบ: คลิกปุ๊บ Copy ลง Clipboard อัตโนมัติทันที -->
+            <div id="announcementText" class="announcement-display" onclick="copyDirectly(this)">[อยู่]ร.Elu0 Ori0 เคาะเดล</div>
+            <div class="hint-text" id="hintText">💡 คลิกที่กล่องข้อความเพื่อ Copy อัตโนมัติ แล้วไปกด Ctrl+V ในเกมได้เลย</div>
         </div>
     </div>
 </div>
@@ -278,6 +285,7 @@
 
 <script>
 let activeTemplate = "[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล";
+let currentTextToCopy = "[อยู่]ร.Elu0 Ori0 เคาะเดล";
 
 function toggleTheme() {
     const body = document.body;
@@ -324,11 +332,11 @@ function updateAnnouncementText() {
     let newEluText = eluPStr !== "" ? formatPriceXX(eluP) : "0";
     let newOriText = oriPStr !== "" ? formatPriceXX(oriP) : "0";
 
-    let resultText = activeTemplate
+    currentTextToCopy = activeTemplate
         .replace('{elu}', newEluText)
         .replace('{ori}', newOriText);
 
-    document.getElementById('announcementText').innerText = resultText;
+    document.getElementById('announcementText').innerText = currentTextToCopy;
 }
 
 function calculateEluOri() {
@@ -356,13 +364,23 @@ function calculateEluOri() {
     updateAnnouncementText();
 }
 
-// ฟังก์ชันช่วยเลือกข้อความทั้งหมดในกล่องเมื่อคลิก
-function selectText(element) {
-    let range = document.createRange();
-    range.selectNodeContents(element);
-    let selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+// ฟังก์ชันสั่ง Copy ข้อความดิบลง Clipboard ทันทีที่คลิก
+function copyDirectly(element) {
+    navigator.clipboard.writeText(currentTextToCopy).then(() => {
+        element.classList.add("copied-flash");
+        let hint = document.getElementById('hintText');
+        let originalHintText = hint.innerText;
+        hint.innerText = "✅ คัดลอกสำเร็จ! สลับไปเกมแล้วกด Ctrl+V ได้เลย";
+        hint.style.color = "#27ae60";
+
+        setTimeout(() => {
+            element.classList.remove("copied-flash");
+            hint.innerText = originalHintText;
+            hint.style.color = "var(--label-color)";
+        }, 1500);
+    }).catch(err => {
+        alert("เบราว์เซอร์ไม่อนุญาตให้คัดลอกอัตโนมัติ");
+    });
 }
 </script>
 
