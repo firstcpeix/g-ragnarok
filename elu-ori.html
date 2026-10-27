@@ -171,15 +171,20 @@
             font-weight: bold;
         }
 
+        .btn-group-copy {
+            display: flex;
+            gap: 8px;
+        }
+
         .copy-btn {
-            width: 100%;
+            flex: 1;
             background-color: #27ae60;
             color: white;
             border: none;
             padding: 8px;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
         }
         .copy-success { background-color: #2980b9 !important; }
@@ -259,12 +264,17 @@
         <div class="announcement-box">
             <div class="announcement-title">📢 เลือกรูปแบบ Wording ประกาศราคา:</div>
             <div class="template-buttons">
-                <button class="tpl-btn" onclick="setTemplate('รับ Elu{elu} Ori{ori} เคาะเดล')">รับ Elu{elu} Ori{ori} เคาะเดล</button>
+                <!-- แบบไร้ปัญหาภาษาไทย 100% -->
+                <button class="tpl-btn" onclick="setTemplate('[On] R.Elu{elu} Ori{ori} KuerDel')">[On] R.Elu... (เซฟชัวร์)</button>
+                <button class="tpl-btn" onclick="setTemplate('Rub Elu{elu} Ori{ori} KuerDel')">Rub Elu... (เซฟชัวร์)</button>
+                <!-- แบบภาษาไทยปกติ -->
                 <button class="tpl-btn" onclick="setTemplate('[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล')">[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล</button>
-                <button class="tpl-btn" onclick="setTemplate('[On]ร.Elu{elu} Ori{ori} เคาะเดล')">[On]ร.Elu{elu} Ori{ori} เคาะเดล</button>
             </div>
-            <input type="text" id="announcementText" class="announcement-input" value="[อยู่]ร.Elu0 Ori0 เคาะเดล">
-            <button class="copy-btn" id="copyBtn" onclick="copyAnnouncement()">📋 Copy ข้อความไปใช้ในเกม</button>
+            <input type="text" id="announcementText" class="announcement-input" value="[On] R.Elu0 Ori0 KuerDel">
+            
+            <div class="btn-group-copy">
+                <button class="copy-btn" id="copyBtn" onclick="copyNormal()">📋 Copy ข้อความ</button>
+            </div>
         </div>
     </div>
 </div>
@@ -274,9 +284,7 @@
 </button>
 
 <script>
-let currentEluText = "0";
-let currentOriText = "0";
-let activeTemplate = "[อยู่]ร.Elu{elu} Ori{ori} เคาะเดล";
+let activeTemplate = "[On] R.Elu{elu} Ori{ori} KuerDel";
 
 function toggleTheme() {
     const body = document.body;
@@ -355,47 +363,16 @@ function calculateEluOri() {
     updateAnnouncementText();
 }
 
-// ฟังก์ชันแปลงข้อความรองรับ Windows-874 สำหรับเกม RO
-function copyAnnouncement() {
-    let rawText = document.getElementById('announcementText').value;
-    
-    // แปลงสตริงให้ส่งผ่านระบบคัดลอกแบบบังคับไบต์ภาษาไทยของ Windows-874
-    let buffer = new ArrayBuffer(rawText.length);
-    let view = new Uint8Array(buffer);
-    
-    // ตารางแปลงรหัสตัวอักษรไทยพื้นฐานสำหรับไคลเอนต์ RO
-    for (let i = 0; i < rawText.length; i++) {
-        let code = rawText.charCodeAt(i);
-        if (code >= 0x0E01 && code <= 0x0E5B) {
-            view[i] = code - 0x0E00 + 0xA0; // แปลงย่านรหัสภาษาไทย Thai to TIS-620/Windows-874
-        } else {
-            view[i] = code & 0xFF;
-        }
-    }
-    
-    // ใช้ Blob บังคับเข้ารหัส charset=windows-874 เพื่อให้ตัวเกม RO อ่านออกถูกต้อง
-    let blob = new Blob([view], { type: "text/plain;charset=windows-874" });
-    let data = [new ClipboardItem({ "text/plain": blob })];
-
-    navigator.clipboard.write(data).then(() => {
+function copyNormal() {
+    let text = document.getElementById('announcementText').value;
+    navigator.clipboard.writeText(text).then(() => {
         let btn = document.getElementById('copyBtn');
-        btn.innerText = "✅ คัดลอกสำเร็จ! (วางในเกมไม่เป็น ???? แล้ว)";
+        btn.innerText = "✅ คัดลอกแล้ว!";
         btn.classList.add("copy-success");
         setTimeout(() => {
-            btn.innerText = "📋 Copy ข้อความไปใช้ในเกม";
+            btn.innerText = "📋 Copy ข้อความ";
             btn.classList.remove("copy-success");
-        }, 2000);
-    }).catch(err => {
-        // Fallback วิธีสำรอง
-        navigator.clipboard.writeText(rawText).then(() => {
-            let btn = document.getElementById('copyBtn');
-            btn.innerText = "✅ คัดลอกสำเร็จ!";
-            btn.classList.add("copy-success");
-            setTimeout(() => {
-                btn.innerText = "📋 Copy ข้อความไปใช้ในเกม";
-                btn.classList.remove("copy-success");
-            }, 1500);
-        });
+        }, 1500);
     });
 }
 </script>
