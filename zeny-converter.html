@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeny & THB Converter - RO Tools</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --label-color: #b0b0b0;
+            --input-bg: #2d2d2d;
+            --input-text: #ffffff;
+            --input-border: #444;
+            --section-bg: #252525;
+            --section-border: #333;
+            --result-bg: #1f3a4d;
+            --bright-gold: #f1c40f;
+            --thb-title-color: #4fa3e3;
+            --zeny-title-color: #c39bd3;
+            --floating-btn-bg: #2c3e50;
+            --floating-btn-text: #f1c40f;
+            --floating-btn-border: #455a64;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --label-color: #555555;
+            --input-bg: #ffffff;
+            --input-text: #000000;
+            --input-border: #ccc;
+            --section-bg: #fafbfc;
+            --section-border: #e1e4e8;
+            --result-bg: #e8f4f8;
+            --bright-gold: #d35400;
+            --thb-title-color: #1a5276;
+            --zeny-title-color: #512e5f;
+            --floating-btn-bg: #ffffff;
+            --floating-btn-text: #2c3e50;
+            --floating-btn-border: #ddd;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color);
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px 10px;
+            box-sizing: border-box;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            border: 1px solid var(--section-border);
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h2 { 
+            color: var(--text-color); 
+            font-size: 18px; 
+            margin: 0; 
+        }
+
+        .section { 
+            background: var(--section-bg); 
+            border: 1px solid var(--section-border); 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-bottom: 15px; 
+        }
+
+        .form-group { margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; }
+        label { font-size: 13px; color: var(--label-color); width: 60%; }
+        input { 
+            width: 38%; 
+            padding: 6px; 
+            box-sizing: border-box; 
+            border: 1px solid var(--input-border); 
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border-radius: 6px; 
+            text-align: right; 
+            font-size: 13px; 
+        }
+
+        .money-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .money-column {
+            background: var(--section-bg);
+            border: 1px solid var(--section-border);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .money-col-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 8px;
+            background: var(--input-bg);
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid;
+        }
+        .title-thb { color: var(--thb-title-color); border-color: var(--thb-title-color); }
+        .title-zeny { color: var(--zeny-title-color); border-color: var(--zeny-title-color); }
+
+        .money-rows-scroll {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .money-row {
+            display: flex;
+            gap: 8px;
+        }
+        .money-row input {
+            width: 48%;
+            font-size: 14px;
+            padding: 7px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            text-align: right;
+            font-weight: bold;
+        }
+        .val-display {
+            width: 52%;
+            padding: 7px;
+            font-size: 13px;
+            text-align: right;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            font-weight: bold;
+            box-sizing: border-box;
+            color: var(--text-color);
+        }
+        .money-total-box {
+            margin-top: 12px;
+            background: var(--result-bg);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid var(--section-border);
+            color: var(--text-color);
+        }
+        .bright-gold-text {
+            color: var(--bright-gold) !important;
+            font-size: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        .theme-toggle-floating {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--floating-btn-bg);
+            color: var(--floating-btn-text);
+            border: 2px solid var(--floating-btn-border);
+            border-radius: 50px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 999;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .theme-toggle-floating:hover {
+            transform: translateY(-3px) scale(1.05);
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+<div class="container">
+    <div class="card">
+        <div class="header-container">
+            <h2>💰 แปลงเงิน M (บาท ↔ zeny)</h2>
+        </div>
+
+        <div class="section">
+            <div class="form-group">
+                <label style="font-weight: bold; color: var(--text-color);">เรท บาท / m (1,000,000 zeny):</label>
+                <input type="text" id="mRate" oninput="formatInputNumber(this); calculateMoney();" placeholder="800" value="800">
+            </div>
+        </div>
+
+        <div class="money-container">
+            <div class="money-column">
+                <div class="money-col-title title-thb">แปลง บาท ➔ Zeny</div>
+                <div class="money-rows-scroll" id="thbToZenyRows"></div>
+                <div class="money-total-box">
+                    รวม Zeny: <span id="totalZenyOut" class="bright-gold-text">0 z</span>
+                </div>
+            </div>
+
+            <div class="money-column">
+                <div class="money-col-title title-zeny">แปลง Zeny ➔ บาท</div>
+                <div class="money-rows-scroll" id="zenyToThbRows"></div>
+                <div class="money-total-box">
+                    รวม บาท: <span id="totalThbOut" class="bright-gold-text">0 ฿</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="theme-toggle-floating" onclick="toggleTheme()" id="themeBtn">
+    ☀️ Light Mode
+</button>
+
+<script>
+window.onload = function() {
+    let thbContainer = document.getElementById('thbToZenyRows');
+    let zenyContainer = document.getElementById('zenyToThbRows');
+
+    for (let i = 0; i < 10; i++) {
+        let row1 = document.createElement('div');
+        row1.className = 'money-row';
+        row1.innerHTML = `<input type="text" class="thb-in" oninput="formatInputNumber(this); calculateMoney();" placeholder="บาท"><div class="val-display zeny-out">0 z</div>`;
+        thbContainer.appendChild(row1);
+
+        let row2 = document.createElement('div');
+        row2.className = 'money-row';
+        row2.innerHTML = `<input type="text" class="zeny-in" oninput="formatInputNumber(this); calculateMoney();" placeholder="zeny"><div class="val-display thb-out">0 ฿</div>`;
+        zenyContainer.appendChild(row2);
+    }
+};
+
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('themeBtn');
+    if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light');
+        btn.innerHTML = '🌙 Dark Mode';
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        btn.innerHTML = '☀️ Light Mode';
+    }
+}
+
+function formatInputNumber(input) {
+    let value = input.value.replace(/,/g, '');
+    if (!isNaN(value) && value !== "") {
+        let parts = value.split('.');
+        parts[0] = Number(parts[0]).toLocaleString();
+        input.value = parts.join('.');
+    }
+}
+
+function getCleanValue(id) {
+    let val = document.getElementById(id).value.replace(/,/g, '');
+    return parseFloat(val) || 0;
+}
+
+function calculateMoney() {
+    let rate = getCleanValue('mRate'); 
+    if (rate <= 0) return;
+
+    let thbInputs = document.querySelectorAll('.thb-in');
+    let zenyOutputs = document.querySelectorAll('.zeny-out');
+    let sumZenyOut = 0;
+
+    thbInputs.forEach((input, idx) => {
+        let thbVal = parseFloat(input.value.replace(/,/g, '')) || 0;
+        let zenyVal = Math.round((thbVal / rate) * 1000000);
+        sumZenyOut += zenyVal;
+        zenyOutputs[idx].innerText = zenyVal > 0 ? zenyVal.toLocaleString() + " z" : "0 z";
+    });
+
+    let zenyInputs = document.querySelectorAll('.zeny-in');
+    let thbOutputs = document.querySelectorAll('.thb-out');
+    let sumThbOut = 0;
+
+    zenyInputs.forEach((input, idx) => {
+        let zenyVal = parseFloat(input.value.replace(/,/g, '')) || 0;
+        let thbVal = (zenyVal / 1000000) * rate;
+        sumThbOut += thbVal;
+        thbOutputs[idx].innerText = thbVal > 0 ? thbVal.toLocaleString(undefined, {maximumFractionDigits: 2}) + " ฿" : "0 ฿";
+    });
+
+    document.getElementById('totalZenyOut').innerText = Math.round(sumZenyOut).toLocaleString() + " z";
+    document.getElementById('totalThbOut').innerText = sumThbOut.toLocaleString(undefined, {maximumFractionDigits: 2}) + " ฿";
+}
+</script>
+
+</body>
+</html>
